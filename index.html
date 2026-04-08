@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>IronAI — Personal Gym Trainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ══════════════════════════════════════
+   IRONAI — COMPLETE STYLES
+   Dark performance-lab aesthetic
+   Lime/green accent system
+══════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080a;--s1:#0e0f12;--s2:#14151a;--s3:#1c1d24;--s4:#23242e;
+  --border:#2c2d38;--border2:#3a3b4a;
+  --text:#ecedf5;--text-sub:#8b8ca8;--text-muted:#4a4b60;
+  --lime:#c8ff00;--lime-dim:#9acc00;--lime-bg:rgba(200,255,0,0.07);--lime-border:rgba(200,255,0,0.2);
+  --green:#00e5a0;--green-bg:rgba(0,229,160,0.08);
+  --red:#ff4d6d;--red-bg:rgba(255,77,109,0.08);
+  --orange:#ff9f43;--orange-bg:rgba(255,159,67,0.08);
+  --blue:#5b9cf6;--blue-bg:rgba(91,156,246,0.08);
+  --purple:#a78bfa;--purple-bg:rgba(167,139,250,0.08);
+  --r4:4px;--r8:8px;--r12:12px;--r18:18px;--r24:24px;--r99:99px;
+  --t:0.18s ease;--sidebar:285px;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:400;line-height:1.6;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:var(--r99)}
+.scroll{overflow-y:auto;overflow-x:hidden}
+.hidden{display:none!important}
+
+/* ── SPLASH ─────────────────────────── */
+#splash{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;transition:opacity 0.6s ease}
+#splash.fade{opacity:0;pointer-events:none}
+.splash-ring{width:80px;height:80px;border-radius:50%;border:3px solid var(--border2);border-top-color:var(--lime);animation:spin 1s linear infinite;margin-bottom:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.splash-logo{font-family:'Bebas Neue',sans-serif;font-size:72px;letter-spacing:8px;background:linear-gradient(135deg,var(--lime) 0%,var(--green) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.splash-tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:3px;text-transform:uppercase}
+.splash-bar-wrap{width:180px;height:2px;background:var(--s3);border-radius:var(--r99);overflow:hidden}
+.splash-bar{height:100%;background:linear-gradient(90deg,var(--lime),var(--green));animation:loadBar 2s ease forwards;width:0}
+@keyframes loadBar{to{width:100%}}
+
+/* ── ONBOARDING ──────────────────────── */
+#onboardingOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(10px);z-index:800;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .2s ease}
+.obox{background:var(--s1);border:1px solid var(--border2);border-radius:var(--r24);width:100%;max-width:500px;overflow:hidden;animation:slideUp .3s ease;box-shadow:0 40px 80px rgba(0,0,0,.6)}
+.obox-hero{background:linear-gradient(135deg,rgba(200,255,0,.09) 0%,rgba(0,229,160,.05) 100%);padding:34px 34px 26px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.obox-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(200,255,0,.12) 0%,transparent 70%)}
+.obox-step{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--lime);letter-spacing:2px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.obox-step::before{content:'';flex:1;height:1px;background:var(--lime-border)}
+.obox-q{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;line-height:1.05;margin-bottom:7px}
+.obox-hint{font-size:13px;color:var(--text-sub);line-height:1.5}
+.obox-pbar{height:3px;background:var(--s3)}
+.obox-pfill{height:100%;background:linear-gradient(90deg,var(--lime),var(--green));transition:width .45s cubic-bezier(.4,0,.2,1)}
+.obox-body{padding:26px 34px}
+.obox-foot{padding:14px 34px 26px;display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--border)}
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt-grid.cols3{grid-template-columns:1fr 1fr 1fr}
+.opt{background:var(--s2);border:1.5px solid var(--border);color:var(--text-sub);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:11px 12px;border-radius:var(--r8);cursor:pointer;text-align:center;transition:all var(--t);line-height:1.3}
+.opt:hover{border-color:var(--border2);color:var(--text);background:var(--s3)}
+.opt.sel{background:var(--lime-bg);border-color:var(--lime);color:var(--lime);font-weight:600}
+.field{width:100%;background:var(--s2);border:1.5px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:12px 16px;border-radius:var(--r8);outline:none;transition:border .15s,box-shadow .15s}
+.field:focus{border-color:var(--lime);box-shadow:0 0 0 3px var(--lime-bg)}
+.field::placeholder{color:var(--text-muted)}
+select.field option{background:var(--s2)}
+textarea.field{resize:none;line-height:1.5}
+
+/* ── BUTTONS ─────────────────────────── */
+.btn{font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;padding:10px 22px;border-radius:var(--r8);border:none;cursor:pointer;transition:all var(--t);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn-lime{background:var(--lime);color:#000}
+.btn-lime:hover{background:var(--lime-dim);transform:translateY(-1px);box-shadow:0 6px 20px rgba(200,255,0,.2)}
+.btn-lime:active{transform:translateY(0);box-shadow:none}
+.btn-ghost{background:var(--s2);border:1.5px solid var(--border);color:var(--text-sub)}
+.btn-ghost:hover{background:var(--s3);color:var(--text);border-color:var(--border2)}
+.btn-red{background:var(--red-bg);border:1.5px solid var(--red);color:var(--red)}
+.btn-red:hover{background:var(--red);color:#fff}
+.btn-sm{padding:7px 14px;font-size:12px}
+.btn-xs{padding:5px 10px;font-size:11px}
+.btn-icon{background:var(--s2);border:1.5px solid var(--border);color:var(--text-sub);width:34px;height:34px;padding:0;border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:all var(--t)}
+.btn-icon:hover{border-color:var(--border2);color:var(--text);background:var(--s3)}
+
+/* ── MODALS ──────────────────────────── */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);z-index:700;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .18s ease}
+.modal-box{background:var(--s1);border:1px solid var(--border2);border-radius:var(--r18);width:100%;max-width:440px;overflow:hidden;animation:slideUp .22s ease;box-shadow:0 30px 60px rgba(0,0,0,.5)}
+.modal-box.wide{max-width:540px}
+.modal-head{padding:24px 28px 14px;border-bottom:1px solid var(--border)}
+.modal-head h2{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:3px}
+.modal-head p{font-size:12.5px;color:var(--text-sub)}
+.modal-body{padding:16px 28px;display:flex;flex-direction:column;gap:14px}
+.modal-foot{padding:14px 28px 22px;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--border)}
+.flabel{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-muted);letter-spacing:.8px;margin-bottom:6px;display:block;text-transform:uppercase}
+
+/* ── APP SHELL ───────────────────────── */
+#appShell{display:flex;flex:1;overflow:hidden}
+
+/* ── SIDEBAR ─────────────────────────── */
+.sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;position:relative;z-index:10;transition:transform .2s ease}
+
+.sb-brand{display:flex;align-items:center;gap:10px;padding:18px 18px 14px;border-bottom:1px solid var(--border)}
+.sb-logo-mark{width:32px;height:32px;background:var(--lime);border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;font-family:'Bebas Neue',sans-serif;color:#000;letter-spacing:-1px}
+.sb-wordmark{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2.5px;line-height:1}
+.sb-wordmark span{color:var(--lime)}
+.sb-version{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);margin-left:auto;letter-spacing:1px}
+
+.sb-profile{display:flex;align-items:center;gap:11px;padding:13px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background var(--t);position:relative}
+.sb-profile:hover{background:var(--s2)}
+.sb-profile::after{content:'✏️';position:absolute;right:14px;font-size:12px;opacity:0;transition:opacity var(--t)}
+.sb-profile:hover::after{opacity:.6}
+.sb-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--lime),var(--green));color:#000;font-family:'Bebas Neue',sans-serif;font-size:19px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+.sb-av-ring{position:absolute;inset:-3px;border-radius:50%;border:2px solid var(--lime);opacity:0;animation:ring-pulse 2s ease infinite}
+.sb-av-ring.show{opacity:1}
+@keyframes ring-pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.1);opacity:.3}}
+.sb-pname{font-size:13.5px;font-weight:600;color:var(--text)}
+.sb-pgoal{font-size:11px;color:var(--text-sub);margin-top:1px}
+
+/* CONSISTENCY SCORE */
+.sb-score{padding:10px 18px;border-bottom:1px solid var(--border)}
+.sb-score-label{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--text-muted);letter-spacing:1px;margin-bottom:6px;text-transform:uppercase}
+.sb-score-bar{height:5px;background:var(--s3);border-radius:var(--r99);overflow:hidden;position:relative}
+.sb-score-fill{height:100%;border-radius:var(--r99);transition:width .6s ease;background:linear-gradient(90deg,var(--red),var(--orange),var(--lime))}
+.sb-score-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;margin-top:4px;display:flex;justify-content:space-between;align-items:center}
+.sb-score-badge{font-size:10px;padding:2px 7px;border-radius:var(--r99);font-family:'JetBrains Mono',monospace}
+
+.sb-stats{padding:10px 18px;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:5px}
+.sb-chip{background:var(--s2);border:1px solid var(--border);border-radius:var(--r4);padding:4px 8px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub)}
+.sb-chip b{color:var(--lime)}
+
+.sb-nav{padding:8px 10px;display:flex;flex-direction:column;gap:2px;flex:1}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--r8);cursor:pointer;color:var(--text-sub);font-size:13.5px;font-weight:500;transition:all var(--t);border:1px solid transparent;width:100%;background:none;text-align:left;position:relative}
+.nav-item:hover{background:var(--s2);color:var(--text)}
+.nav-item.active{background:var(--lime-bg);color:var(--lime);border-color:var(--lime-border)}
+.nav-item .nav-ico{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-family:'JetBrains Mono',monospace;padding:1px 5px;border-radius:var(--r99)}
+
+.sb-actions{padding:8px 10px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:2px}
+.sb-act{background:none;border:none;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-size:12px;padding:8px 10px;border-radius:var(--r8);cursor:pointer;text-align:left;transition:all var(--t);display:flex;align-items:center;gap:8px;width:100%}
+.sb-act:hover{background:var(--s2);color:var(--text-sub)}
+.sb-act.danger:hover{background:var(--red-bg);color:var(--red)}
+
+.sb-foot{padding:8px 18px 12px;border-top:1px solid var(--border)}
+.sb-model-tag{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);display:flex;align-items:center;gap:5px}
+.model-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── MAIN ────────────────────────────── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ── TABS ────────────────────────────── */
+.tab{display:none;flex-direction:column;flex:1;overflow:hidden}
+.tab.active{display:flex}
+
+/* ── CHAT ────────────────────────────── */
+.chat-header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--s1);border-bottom:1px solid var(--border);flex-shrink:0;gap:12px}
+.trainer-pill{display:flex;align-items:center;gap:10px}
+.trainer-orb{width:36px;height:36px;background:var(--s3);border:2px solid var(--lime);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;position:relative;flex-shrink:0}
+.online-dot{position:absolute;bottom:0;right:0;width:9px;height:9px;background:var(--green);border-radius:50%;border:2px solid var(--s1);animation:pulse-dot 2.5s infinite}
+.trainer-name-h{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1.5px}
+.trainer-sub-h{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--text-sub);margin-top:1px}
+.trainer-status-h{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--green)}
+.chat-hdr-right{display:flex;align-items:center;gap:8px}
+
+/* ALERT BANNER */
+.alert-banner{display:flex;align-items:center;gap:10px;padding:9px 18px;border-bottom:1px solid;font-size:12.5px;font-weight:500;flex-shrink:0;animation:slideDown .3s ease}
+@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:none;opacity:1}}
+.alert-banner.warn{background:var(--orange-bg);border-color:rgba(255,159,67,.25);color:var(--orange)}
+.alert-banner.good{background:var(--green-bg);border-color:rgba(0,229,160,.2);color:var(--green)}
+.alert-banner.info{background:var(--blue-bg);border-color:rgba(91,156,246,.2);color:var(--blue)}
+.alert-banner button{margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:14px;opacity:.6}
+.alert-banner button:hover{opacity:1}
+
+/* CHAT WINDOW */
+.chat-win{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+
+/* MESSAGES */
+.msg{display:flex;gap:8px;animation:msgIn .24s cubic-bezier(.2,.6,.4,1) both;max-width:82%}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+@keyframes msgIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.msg-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:4px}
+.msg.ai .msg-av{background:var(--s3);border:1.5px solid var(--border2)}
+.msg.user .msg-av{background:linear-gradient(135deg,var(--lime),var(--green));color:#000;font-weight:700;font-size:10px}
+.msg-col{display:flex;flex-direction:column;gap:3px}
+.bubble{padding:10px 14px;border-radius:14px;font-size:13.5px;line-height:1.68;word-break:break-word}
+.msg.ai .bubble{background:var(--s2);border:1px solid var(--border);border-bottom-left-radius:3px;color:var(--text)}
+.msg.user .bubble{background:var(--lime);color:#000;border-bottom-right-radius:3px;font-weight:500}
+.msg-time{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)}
+.msg.user .msg-time{text-align:right}
+
+/* AI BUBBLE FORMATTING */
+.bubble h3{font-family:'Bebas Neue',sans-serif;font-size:12.5px;letter-spacing:2px;color:var(--lime);margin:12px 0 5px;border-bottom:1px solid var(--border);padding-bottom:4px}
+.bubble ul{padding-left:16px;margin:4px 0}
+.bubble li{margin-bottom:3px;font-size:13px}
+.bubble strong{color:var(--text);font-weight:600}
+.bubble em{color:var(--text-sub);font-style:normal}
+.bubble p{margin-bottom:5px}
+.bubble p:last-child{margin-bottom:0}
+.bubble code{background:var(--s3);padding:1px 6px;border-radius:var(--r4);font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--lime)}
+.bubble hr{border:none;border-top:1px solid var(--border);margin:8px 0}
+/* coach accountability styling */
+.bubble .accountability{background:var(--orange-bg);border-left:2px solid var(--orange);padding:8px 12px;border-radius:0 var(--r8) var(--r8) 0;margin:8px 0;font-size:12.5px;color:var(--orange)}
+
+/* TYPING */
+.typing-msg{display:flex;gap:8px;animation:msgIn .2s ease}
+.typing-dots{display:flex;gap:5px;align-items:center;padding:13px 16px;background:var(--s2);border:1px solid var(--border);border-radius:14px;border-bottom-left-radius:3px}
+.dot{width:6px;height:6px;background:var(--text-muted);border-radius:50%;animation:dotBlink 1.3s ease infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes dotBlink{0%,80%,100%{opacity:.25;transform:scale(.75)}40%{opacity:1;transform:scale(1)}}
+
+/* QUICK CHIPS */
+.quick-area{padding:10px 16px 0;display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
+.qchip{background:var(--s2);border:1.5px solid var(--border);color:var(--text-sub);font-size:11.5px;font-weight:500;padding:5px 12px;border-radius:var(--r99);cursor:pointer;transition:all var(--t);white-space:nowrap;font-family:'DM Sans',sans-serif}
+.qchip:hover{border-color:var(--lime-border);color:var(--lime);background:var(--lime-bg)}
+
+/* CHAT INPUT */
+.chat-input-area{padding:10px 16px 14px;background:var(--s1);border-top:1px solid var(--border);flex-shrink:0}
+.chat-input-wrap{display:flex;align-items:flex-end;gap:8px;background:var(--s2);border:1.5px solid var(--border2);border-radius:var(--r18);padding:10px 12px;transition:border .15s,box-shadow .15s}
+.chat-input-wrap:focus-within{border-color:var(--lime);box-shadow:0 0 0 3px var(--lime-bg)}
+.chat-input-wrap textarea{flex:1;background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;resize:none;outline:none;max-height:130px;line-height:1.5}
+.chat-input-wrap textarea::placeholder{color:var(--text-muted)}
+.send-btn{background:var(--lime);border:none;color:#000;width:34px;height:34px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all var(--t)}
+.send-btn:hover{background:var(--lime-dim);transform:scale(1.08)}
+.send-btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.chat-hint{font-size:10.5px;color:var(--text-muted);margin-top:7px;padding:0 2px;font-family:'JetBrains Mono',monospace;letter-spacing:.3px}
+
+/* ── PLAN TAB ─────────────────────────── */
+.tab-header{padding:22px 28px 14px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.tab-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;line-height:1}
+.tab-sub{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-sub);margin-top:4px}
+.tab-body{flex:1;overflow-y:auto;padding:22px 28px}
+
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:800px){.plan-grid{grid-template-columns:1fr}}
+.plan-section{background:var(--s1);border:1px solid var(--border);border-radius:var(--r18);overflow:hidden}
+.plan-sec-head{padding:13px 18px;background:var(--s2);border-bottom:1px solid var(--border);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2.5px;color:var(--lime);display:flex;align-items:center;gap:8px}
+.plan-sec-body{padding:12px 18px}
+.plan-row{display:flex;align-items:flex-start;gap:12px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12.5px}
+.plan-row:last-child{border-bottom:none}
+.plan-row .pk{color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:9.5px;min-width:100px;flex-shrink:0;padding-top:2px;letter-spacing:.3px;text-transform:uppercase}
+.plan-row .pv{color:var(--text);line-height:1.6}
+.plan-full{grid-column:1/-1}
+
+/* EVOLUTION BADGE */
+.plan-evolution{display:flex;align-items:center;gap:8px;background:var(--purple-bg);border:1px solid rgba(167,139,250,.2);border-radius:var(--r8);padding:9px 14px;margin-bottom:14px;font-size:12px;color:var(--purple)}
+.plan-evolution span{font-weight:600}
+
+/* ── PROGRESS TAB ─────────────────────── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+@media(max-width:700px){.stat-grid{grid-template-columns:1fr 1fr}}
+.stat-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r12);padding:14px 16px}
+.stat-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;letter-spacing:.5px}
+.stat-val.lime{color:var(--lime)}
+.stat-val.green{color:var(--green)}
+.stat-val.red{color:var(--red)}
+.stat-val.blue{color:var(--blue)}
+.stat-val.orange{color:var(--orange)}
+
+/* TREND CHART */
+.trend-chart{background:var(--s1);border:1px solid var(--border);border-radius:var(--r12);padding:14px 16px;margin-bottom:14px}
+.trend-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.trend-bars{display:flex;align-items:flex-end;gap:4px;height:56px}
+.trend-bar{flex:1;border-radius:var(--r4) var(--r4) 0 0;min-height:4px;transition:height .4s ease;cursor:default;position:relative}
+.trend-bar:hover .trend-tip{opacity:1}
+.trend-tip{position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:var(--s3);border:1px solid var(--border2);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 5px;border-radius:var(--r4);white-space:nowrap;opacity:0;transition:opacity .15s;pointer-events:none}
+
+.pentry{background:var(--s1);border:1px solid var(--border);border-radius:var(--r12);padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px;animation:msgIn .2s ease both}
+.pentry-date{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--text-muted);min-width:76px}
+.pentry-weight{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--lime);letter-spacing:.5px;line-height:1}
+.pentry-note{font-size:12px;color:var(--text-sub);margin-top:1px}
+.pentry-delta{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11.5px;padding:3px 9px;border-radius:var(--r4);font-weight:500}
+.pentry-delta.neg{color:var(--green);background:var(--green-bg)}
+.pentry-delta.pos{color:var(--orange);background:var(--orange-bg)}
+.pentry-delta.zero{color:var(--text-muted);background:var(--s2)}
+
+/* ── EMPTY ───────────────────────────── */
+.empty{text-align:center;padding:50px 20px;color:var(--text-muted)}
+.empty-icon{font-size:42px;margin-bottom:12px}
+.empty h3{color:var(--text-sub);font-weight:500;margin-bottom:6px;font-size:15px}
+.empty p{font-size:12.5px;margin-bottom:18px;max-width:260px;margin-inline:auto;line-height:1.6}
+
+/* ── MOBILE HAMBURGER ─────────────────── */
+.hamburger{display:none;position:fixed;top:10px;left:10px;z-index:300;background:var(--s2);border:1.5px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:var(--r8);cursor:pointer;align-items:center;justify-content:center;font-size:16px}
+.sb-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9}
+
+/* ── TOAST ───────────────────────────── */
+#toast{position:fixed;bottom:20px;right:20px;z-index:999;background:var(--s2);border:1.5px solid var(--border2);color:var(--text);font-size:12.5px;padding:10px 16px;border-radius:var(--r12);transform:translateY(70px);opacity:0;transition:all .28s cubic-bezier(.2,.6,.4,1);font-family:'JetBrains Mono',monospace;pointer-events:none;max-width:300px;line-height:1.4}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.lime{border-color:var(--lime-border);color:var(--lime)}
+#toast.warn{border-color:rgba(255,159,67,.3);color:var(--orange)}
+#toast.err{border-color:rgba(255,77,109,.3);color:var(--red)}
+
+/* ── ANIMATIONS ───────────────────────── */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+
+/* ── RESPONSIVE ───────────────────────── */
+@media(max-width:768px){
+  .sidebar{position:fixed;top:0;left:0;height:100vh;z-index:200;transform:translateX(-100%);box-shadow:none}
+  .sidebar.open{transform:translateX(0);box-shadow:16px 0 50px rgba(0,0,0,.7)}
+  .hamburger{display:flex}
+  .sb-backdrop.show{display:block}
+  .main{width:100%}
+  .tab-header{padding:14px 16px 10px}
+  .tab-body{padding:14px 16px}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .chat-win{padding:12px 14px}
+  .msg{max-width:93%}
+  .tab-title{font-size:20px}
+  .obox{max-width:100%}
+  .obox-hero{padding:24px 22px 18px}
+  .obox-body{padding:18px 22px}
+  .obox-foot{padding:12px 22px 20px}
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-ring"></div>
+  <div class="splash-logo">IRONAI</div>
+  <div class="splash-tag">Powered by AI · Built for Results</div>
+  <div class="splash-bar-wrap"><div class="splash-bar"></div></div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- ══ ONBOARDING ════════════════════════ -->
+<div id="onboardingOverlay" class="hidden">
+  <div class="obox">
+    <div class="obox-hero">
+      <div class="obox-step" id="oStepTag">STEP 1 OF 9</div>
+      <div class="obox-q" id="oQ">Loading...</div>
+      <div class="obox-hint" id="oHint"></div>
+    </div>
+    <div class="obox-pbar"><div class="obox-pfill" id="oPfill" style="width:11%"></div></div>
+    <div class="obox-body" id="oBody"></div>
+    <div class="obox-foot">
+      <button class="btn btn-ghost" id="oPrev" onclick="prevStep()">← Back</button>
+      <button class="btn btn-lime" id="oNext" onclick="nextStep()">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PROGRESS MODAL ═════════════════════ -->
+<div id="progressModal" class="modal-ov hidden">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>📊 Log Progress Update</h2>
+      <p>Your trainer is watching. Keep it real.</p>
+    </div>
+    <div class="modal-body">
+      <div><label class="flabel">Current Weight (kg)</label><input class="field" type="number" step="0.1" id="progWeight" placeholder="e.g. 74.5"/></div>
+      <div><label class="flabel">Sessions completed this week</label>
+        <div class="opt-grid cols3" style="margin-top:0">
+          <button class="opt" onclick="selOpt('sessions','0',this)">0</button>
+          <button class="opt" onclick="selOpt('sessions','1-2',this)">1–2</button>
+          <button class="opt" onclick="selOpt('sessions','3-4',this)">3–4</button>
+          <button class="opt" onclick="selOpt('sessions','5+',this)">5+</button>
+          <button class="opt" onclick="selOpt('sessions','all',this)">All ✅</button>
+        </div>
+      </div>
+      <div><label class="flabel">Notes (energy, sleep, mood…)</label><textarea class="field" id="progNotes" rows="3" placeholder="e.g. Felt strong, sleep was bad, skipped leg day..."></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('progressModal')">Cancel</button>
+      <button class="btn btn-lime" onclick="saveProgress()">Save & Share with Trainer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EDIT PROFILE MODAL ════════════════ -->
+<div id="editModal" class="modal-ov hidden">
+  <div class="modal-box wide">
+    <div class="modal-head">
+      <h2>✏️ Edit Your Profile</h2>
+      <p>Coach will adapt your plan to any changes.</p>
+    </div>
+    <div class="modal-body" id="editBody" style="display:grid;grid-template-columns:1fr 1fr;gap:10px 20px"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('editModal')">Cancel</button>
+      <button class="btn btn-lime" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HAMBURGER ══════════════════════════ -->
+<button class="hamburger" id="hamburger" onclick="toggleSB()">☰</button>
+<div class="sb-backdrop" id="sbBackdrop" onclick="toggleSB()"></div>
+
+<!-- ══ APP SHELL ══════════════════════════ -->
+<div id="appShell" class="hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo-mark">IA</div>
+      <div class="sb-wordmark">IRON<span>AI</span></div>
+      <div class="sb-version">v2.0</div>
+    </div>
+
+    <div class="sb-profile" onclick="openEdit()">
+      <div class="sb-av" id="sbAv">
+        <div class="sb-av-ring" id="sbRing"></div>
+        ?
+      </div>
+      <div>
+        <div class="sb-pname" id="sbName">—</div>
+        <div class="sb-pgoal" id="sbGoal">Tap to edit profile</div>
+      </div>
+    </div>
+
+    <div class="sb-score hidden" id="sbScoreWrap">
+      <div class="sb-score-label">CONSISTENCY SCORE</div>
+      <div class="sb-score-bar"><div class="sb-score-fill" id="sbScoreFill" style="width:0%"></div></div>
+      <div class="sb-score-val">
+        <span id="sbScoreNum" style="color:var(--lime)">—</span>
+        <span class="sb-score-badge" id="sbScoreBadge"></span>
+      </div>
+    </div>
+
+    <div class="sb-stats" id="sbStats"></div>
+
+    <nav class="sb-nav">
+      <button class="nav-item active" id="navChat" onclick="switchTab('chat')">
+        <span class="nav-ico">💬</span> Chat
+        <span class="nav-badge hidden" id="chatBadge">!</span>
+      </button>
+      <button class="nav-item" id="navPlan" onclick="switchTab('plan')">
+        <span class="nav-ico">📋</span> My Plan
+      </button>
+      <button class="nav-item" id="navProgress" onclick="switchTab('progress')">
+        <span class="nav-ico">📈</span> Progress
+      </button>
+    </nav>
+
+    <div class="sb-actions">
+      <button class="sb-act" onclick="openModal('progressModal')">📊 &nbsp;Log Progress</button>
+      <button class="sb-act" onclick="openEdit()">✏️ &nbsp;Edit Profile</button>
+      <button class="sb-act" onclick="clearChat()">🗑️ &nbsp;Clear Chat</button>
+      <button class="sb-act danger" onclick="resetAll()">⚠️ &nbsp;Reset Everything</button>
+    </div>
+
+    <div class="sb-foot">
+      <div class="sb-model-tag">
+        <div class="model-dot"></div>
+        GPT-3.5-TURBO · LOCAL
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ══ CHAT TAB ══ -->
+    <div class="tab active" id="tabChat">
+      <div class="chat-header">
+        <div class="trainer-pill">
+          <div class="trainer-orb">🏋️<div class="online-dot"></div></div>
+          <div>
+            <div class="trainer-name-h">COACH IRONAI</div>
+            <div class="trainer-status-h" id="trainerStatus">● Online — Ready to train</div>
+          </div>
+        </div>
+        <div class="chat-hdr-right">
+          <button class="btn-icon" title="Clear chat" onclick="clearChat()">🗑️</button>
+        </div>
+      </div>
+
+      <!-- SMART ALERT BANNER -->
+      <div class="alert-banner hidden" id="alertBanner">
+        <span id="alertText"></span>
+        <button onclick="dismissAlert()">✕</button>
+      </div>
+
+      <div class="chat-win scroll" id="chatWin"></div>
+
+      <div class="quick-area" id="quickArea">
+        <div class="qchip" onclick="qs('Build me a workout plan')">💪 Workout Plan</div>
+        <div class="qchip" onclick="qs('Build me a diet plan')">🥗 Diet Plan</div>
+        <div class="qchip" onclick="qs('How can I progress faster?')">🚀 Progress Tips</div>
+        <div class="qchip" onclick="qs('I missed workouts this week')">😅 Missed Sessions</div>
+        <div class="qchip" onclick="qs('What should I eat before training?')">⚡ Pre-Workout Meal</div>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="chat-input-wrap">
+          <textarea id="msgInput" placeholder="Message Coach IronAI..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMsg()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+        <div class="chat-hint">ENTER to send · SHIFT+ENTER for new line</div>
+      </div>
+    </div>
+
+    <!-- ══ PLAN TAB ══ -->
+    <div class="tab" id="tabPlan">
+      <div class="tab-header">
+        <div>
+          <div class="tab-title">MY ACTIVE PLAN</div>
+          <div class="tab-sub" id="planDate">No plan activated yet</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="switchTab('chat')">+ Request Update</button>
+      </div>
+      <div class="tab-body scroll" id="planBody">
+        <div class="empty">
+          <div class="empty-icon">📋</div>
+          <h3>No active plan yet</h3>
+          <p>Chat with your trainer and say "yes" or "ok" to lock in your plan.</p>
+          <button class="btn btn-lime" onclick="switchTab('chat')">Go to Chat →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PROGRESS TAB ══ -->
+    <div class="tab" id="tabProgress">
+      <div class="tab-header">
+        <div>
+          <div class="tab-title">PROGRESS LOG</div>
+          <div class="tab-sub">Your journey, tracked over time.</div>
+        </div>
+        <button class="btn btn-lime btn-sm" onclick="openModal('progressModal')">+ Log Update</button>
+      </div>
+      <div class="tab-body scroll" id="progressBody"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════
+     IRONAI COMPLETE JAVASCRIPT
+══════════════════════════════════════ -->
+<script>
+"use strict";
+
+// ═══════════════════════════════════════════
+//  🔐 API KEY — Replace with your actual key
+//  This stays in JS only, never shown in UI
+// ═══════════════════════════════════════════
+const OPENAI_API_KEY = "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";
+const MODEL = "gpt-3.5-turbo";  // cheapest capable model
+
+// ── STORAGE KEYS ────────────────────────────
+const LS = {
+  profile:"ia_v2_profile", workout:"ia_v2_workout", diet:"ia_v2_diet",
+  history:"ia_v2_history", lastDate:"ia_v2_lastdate",
+  activePlan:"ia_v2_plan", progress:"ia_v2_progress",
+  sessions:"ia_v2_sessions"
+};
+
+// ── SYSTEM PROMPT ────────────────────────────
+// Injected with live user context on every call
+const SYSTEM_BASE = `You are Coach IronAI — an elite, evidence-based personal trainer and nutrition expert.
+You have PERFECT MEMORY of this user's profile, past plans, and all progress updates (injected below).
+
+PERSONALITY & TONE:
+- Talk like a REAL coach. Friendly, direct, occasionally firm.
+- Use natural openers: "Alright,", "Look,", "Here's the thing —", "Let's be real,"
+- Ask natural follow-up questions. Never be robotic.
+- Be ACCOUNTABLE. If the user is slipping, call it out respectfully.
+- Examples of coaching tone:
+  ❌ "Here is your plan."
+  ✅ "Alright, based on your goal and history, here's what makes sense right now..."
+  ❌ "You should exercise more."
+  ✅ "Look — you've missed 3 sessions this week. What's getting in the way? Let's fix that."
+
+MEMORY RULES:
+- You ALWAYS use the injected context (profile, plan, progress).
+- NEVER generate a completely new plan unless the user explicitly asks, goal changes, or current plan isn't working.
+- PREFER adjusting existing plans: more reps, different split, corrected nutrition.
+
+PLAN CONTINUITY:
+- When user shares progress (weight, sessions), ANALYZE it:
+  · Weight trending down on fat loss goal → positive, suggest slight adjustment
+  · Stagnation for 2+ weeks → suggest deload or diet break
+  · Missed sessions consistently → accountability message + simplified plan
+  · Good progress → progressive overload, increase challenge
+
+AGREEMENT DETECTION:
+- If user says ok/yes/sure/let's do it/looks good/agreed/I'll follow/cool/this works/perfect/fine → include PLAN_CONFIRMED in your reply (hidden flag, not shown to user).
+
+PLAN FORMAT — use EXACTLY these markers when generating plans:
+---WORKOUT_START---
+Split: [value]
+Schedule: [value]
+Exercises: [detailed list with sets×reps×rest]
+Progression: [weekly progression rule]
+Notes: [optional coaching notes]
+---WORKOUT_END---
+
+---DIET_START---
+Calories: [number]
+Protein: [g]
+Carbs: [g]
+Fats: [g]
+Meals: [breakfast, lunch, dinner, snacks with examples]
+Timing: [pre/post workout nutrition]
+Notes: [tips]
+---DIET_END---
+
+ANTI-HALLUCINATION:
+- Only use proven fitness/nutrition science. Say "I'm not sure" if uncertain.
+- Recommend seeing a doctor/physio for injuries or medical concerns.
+
+SCOPE: Only fitness, gym, nutrition, recovery. Politely decline everything else.
+
+ADAPTIVE INTELLIGENCE:
+- Beginner → simple, 3-day programs, compound movements only
+- Intermediate → structured periodization, 4-day splits
+- Advanced → optimized programming, deloads, RPE-based training`;
+
+// ── ONBOARDING STEPS ─────────────────────────
+const STEPS = [
+  {k:"name",    q:"What's your name?",               hint:"Let's make this personal.",                      type:"text",   ph:"e.g. Alex"},
+  {k:"age",     q:"How old are you?",                hint:"Age shapes training volume and recovery.",        type:"number", ph:"e.g. 28"},
+  {k:"gender",  q:"What's your gender?",             hint:"For accurate hormonal & calorie adjustments.",    type:"opts",   opts:["Male","Female","Non-binary","Prefer not to say"]},
+  {k:"height",  q:"Height? (cm)",                    hint:"Helps calculate healthy body weight range.",      type:"number", ph:"e.g. 175"},
+  {k:"weight",  q:"Current weight? (kg)",            hint:"Your starting point — we'll track changes.",      type:"number", ph:"e.g. 78"},
+  {k:"goal",    q:"What's your main goal?",          hint:"Be honest. Everything depends on this.",          type:"opts",   opts:["Fat Loss","Muscle Gain","Body Recomposition","Strength","General Fitness","Athletic Performance"]},
+  {k:"exp",     q:"Training experience?",            hint:"So I don't under-train or over-train you.",       type:"opts",   opts:["Beginner (0–1 yr)","Intermediate (1–3 yrs)","Advanced (3+ yrs)","Returning from break"]},
+  {k:"diet",    q:"Diet preference?",                hint:"This completely changes your nutrition plan.",     type:"opts",   opts:["No restrictions","Vegetarian","Vegan","Keto / Low-carb","Gluten-free","Halal / Kosher"]},
+  {k:"injuries",q:"Injuries or limitations?",        hint:"Safety comes first. Be honest here.",             type:"text",   ph:"e.g. lower back pain, bad knee — or type 'None'"},
+];
+
+// ── APP STATE ─────────────────────────────────
+let step = 0, oData = {}, history = [], busy = false;
+let progressSessions = null;
+
+// ═══════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+    const sp = document.getElementById("splash");
+    sp.classList.add("fade");
+    setTimeout(() => { sp.style.display = "none"; boot(); }, 600);
+  }, 2200);
+});
+
+function boot() {
+  const p = ls("get", LS.profile);
+  if (!p) { openOnboarding(); return; }
+  document.getElementById("appShell").classList.remove("hidden");
+  initApp(p);
+}
+
+// ═══════════════════════════════════════════
+//  LOCAL STORAGE HELPERS
+// ═══════════════════════════════════════════
+function ls(op, key, val) {
+  try {
+    if (op === "get") { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
+    if (op === "set") localStorage.setItem(key, JSON.stringify(val));
+    if (op === "del") localStorage.removeItem(key);
+  } catch(e) { console.warn("LS error:", e); }
+}
+
+// ═══════════════════════════════════════════
+//  ONBOARDING
+// ═══════════════════════════════════════════
+function openOnboarding() {
+  step = 0; oData = {};
+  document.getElementById("onboardingOverlay").classList.remove("hidden");
+  renderStep();
+}
+function renderStep() {
+  const s = STEPS[step], tot = STEPS.length;
+  document.getElementById("oStepTag").textContent = `STEP ${step+1} OF ${tot}`;
+  document.getElementById("oQ").textContent = s.q;
+  document.getElementById("oHint").textContent = s.hint;
+  document.getElementById("oPfill").style.width = `${((step+1)/tot)*100}%`;
+  document.getElementById("oPrev").style.visibility = step === 0 ? "hidden" : "visible";
+  document.getElementById("oNext").textContent = step === tot-1 ? "Start Training 🚀" : "Continue →";
+  const body = document.getElementById("oBody");
+  if (s.type === "opts") {
+    const sel = oData[s.k]||"";
+    body.innerHTML = `<div class="opt-grid">${s.opts.map(o=>`<button class="opt${sel===o?" sel":""}" onclick="selOpt('${s.k}','${o.replace(/'/g,"\\'")}',this)">${o}</button>`).join("")}</div>`;
+  } else {
+    body.innerHTML = `<input class="field" type="${s.type}" id="si" placeholder="${s.ph||""}" value="${oData[s.k]||""}" onkeydown="if(event.key==='Enter')nextStep()"/>`;
+    setTimeout(()=>{ const el=document.getElementById("si"); if(el)el.focus(); },80);
+  }
+}
+function selOpt(k, v, el) {
+  oData[k]=v;
+  el.closest(".opt-grid").querySelectorAll(".opt").forEach(b=>b.classList.remove("sel"));
+  el.classList.add("sel");
+}
+function nextStep() {
+  const s = STEPS[step];
+  if (s.type !== "opts") {
+    const el = document.getElementById("si");
+    const v = el ? el.value.trim() : "";
+    if (!v && s.k !== "injuries") { el.style.borderColor="var(--red)"; el.focus(); return; }
+    oData[s.k] = v||"None";
+  } else {
+    if (!oData[s.k]) { toast("Please select an option","warn"); return; }
+  }
+  if (step < STEPS.length-1) { step++; renderStep(); }
+  else finishOnboard();
+}
+function prevStep() { if(step>0){step--;renderStep();} }
+function finishOnboard() {
+  const profile = {...oData, createdAt: new Date().toISOString()};
+  ls("set", LS.profile, profile);
+  ls("set", LS.lastDate, new Date().toISOString());
+  document.getElementById("onboardingOverlay").classList.add("hidden");
+  document.getElementById("appShell").classList.remove("hidden");
+  initApp(profile);
+  setTimeout(()=>greetNew(profile), 400);
+}
+
+// ═══════════════════════════════════════════
+//  INIT APP
+// ═══════════════════════════════════════════
+function initApp(p) {
+  updateSidebar(p);
+  history = ls("get", LS.history) || [];
+  loadChatHistory();
+  renderProgress();
+  const plan = ls("get", LS.activePlan);
+  if (plan) renderPlanTab(plan);
+
+  // Analyze and show smart alert
+  const analysis = analyzeUserProgress();
+  if (analysis) showAlert(analysis.msg, analysis.type);
+
+  // Follow-up on return visit
+  const lastDate = ls("get", LS.lastDate);
+  if (history.length > 0 && lastDate) {
+    const days = Math.floor((Date.now()-new Date(lastDate))/86400000);
+    if (days >= 1) setTimeout(()=>addAI(buildFollowUp(p, plan, days)), 700);
+  }
+  ls("set", LS.lastDate, new Date().toISOString());
+  updateConsistencyScore();
+}
+
+// ═══════════════════════════════════════════
+//  🧠 INTELLIGENT MEMORY ENGINE
+// ═══════════════════════════════════════════
+function analyzeUserProgress() {
+  const log = ls("get", LS.progress) || [];
+  if (log.length < 2) return null;
+  const p = ls("get", LS.profile) || {};
+  const last = log[log.length-1], prev = log[log.length-2];
+  const delta = last.weight - prev.weight;
+  const goal = p.goal || "";
+
+  // Stagnation check: last 3 entries within 0.3kg
+  if (log.length >= 3) {
+    const recent = log.slice(-3);
+    const span = Math.max(...recent.map(e=>e.weight)) - Math.min(...recent.map(e=>e.weight));
+    if (span < 0.3 && (goal.includes("Fat") || goal.includes("Muscle"))) {
+      return {msg:`⚠️ Weight has been flat for ${log.length >= 3 ? "3" : "2"} entries. Time to shake things up — tell your coach!`, type:"warn"};
+    }
+  }
+  // Fat loss — gaining weight
+  if (goal.includes("Fat") && delta > 0.5) {
+    return {msg:`📈 You've gained ${delta.toFixed(1)}kg since last entry. Let's talk to your trainer.`, type:"warn"};
+  }
+  // Muscle gain — losing weight
+  if (goal.includes("Muscle") && delta < -0.5) {
+    return {msg:`📉 You've lost ${Math.abs(delta).toFixed(1)}kg. For muscle gain, you need a calorie surplus.`, type:"info"};
+  }
+  // Positive progress
+  if (goal.includes("Fat") && delta < -0.3) {
+    return {msg:`🔥 Down ${Math.abs(delta).toFixed(1)}kg since last check-in. Keep it up!`, type:"good"};
+  }
+  return null;
+}
+
+function updateConsistencyScore() {
+  const log = ls("get", LS.progress) || [];
+  if (log.length < 2) return;
+  const wrap = document.getElementById("sbScoreWrap");
+  wrap.classList.remove("hidden");
+
+  // Score based on: frequency of logging, positive trends, session completion
+  const daysSinceStart = Math.max(1, Math.floor((Date.now()-new Date(log[0].iso))/86400000));
+  const expectedLogs = Math.floor(daysSinceStart/7); // weekly
+  const logRate = Math.min(1, log.length / Math.max(1, expectedLogs));
+  // session adherence from "all" sessions
+  const allCount = log.filter(e=>e.sessions==="all").length;
+  const sessionRate = log.length > 0 ? allCount/log.length : 0;
+  const score = Math.round((logRate*50 + sessionRate*50));
+  const pct = Math.min(100, score);
+
+  document.getElementById("sbScoreFill").style.width = pct+"%";
+  document.getElementById("sbScoreNum").textContent = pct+"%";
+
+  let badge, col;
+  if (pct >= 80) { badge="🔥 On Fire"; col="var(--lime)"; }
+  else if (pct >= 55) { badge="💪 Solid"; col="var(--green)"; }
+  else if (pct >= 30) { badge="⚡ Building"; col="var(--orange)"; }
+  else { badge="🌱 Starting"; col="var(--text-sub)"; }
+  const b = document.getElementById("sbScoreBadge");
+  b.textContent=badge; b.style.color=col; b.style.background=col.replace(")",",0.1)").replace("var(","rgba(").replace("--lime","200,255,0").replace("--green","0,229,160").replace("--orange","255,159,67").replace("--text-sub","139,140,168");
+  document.getElementById("sbScoreNum").style.color=col;
+}
+
+function buildContextBlock(p) {
+  const prog = ls("get", LS.progress) || [];
+  const plan = ls("get", LS.activePlan);
+  const workout = ls("get", LS.workout);
+  const diet = ls("get", LS.diet);
+  const analysis = analyzeUserProgress();
+
+  let ctx = `\n\n═══ USER CONTEXT (use this actively) ═══\n`;
+  ctx += `[PROFILE]\nName: ${p.name} | Age: ${p.age} | Gender: ${p.gender}\n`;
+  ctx += `Height: ${p.height}cm | Weight: ${p.weight}kg\n`;
+  ctx += `Goal: ${p.goal} | Experience: ${p.exp} | Diet: ${p.diet}\n`;
+  ctx += `Injuries/Limitations: ${p.injuries||"None"}\n\n`;
+
+  if (plan) {
+    ctx += `[ACTIVE PLAN — activated ${new Date(plan.savedAt).toLocaleDateString()}]\n`;
+    if (workout) ctx += `Workout Split: ${workout.split||"Custom"} | Schedule: ${workout.schedule||"—"}\n`;
+    if (diet) ctx += `Diet: ${diet.calories||"—"} kcal/day | Protein: ${diet.protein||"—"}g | Carbs: ${diet.carbs||"—"}g | Fats: ${diet.fats||"—"}g\n`;
+    ctx += "\n";
+  } else {
+    ctx += `[NO ACTIVE PLAN YET]\n\n`;
+  }
+
+  if (prog.length > 0) {
+    ctx += `[PROGRESS LOG — ${prog.length} entries]\n`;
+    const start = prog[0].weight, curr = prog[prog.length-1].weight;
+    ctx += `Starting weight: ${start}kg | Current: ${curr}kg | Change: ${(curr-start).toFixed(1)}kg\n`;
+    ctx += `Recent entries:\n${prog.slice(-5).map(e=>`  ${e.date}: ${e.weight}kg — sessions: ${e.sessions||"—"} — "${e.notes}"`).join("\n")}\n\n`;
+    if (analysis) ctx += `[TRAINER ALERT]: ${analysis.msg}\n`;
+  } else {
+    ctx += `[NO PROGRESS LOGGED YET]\n`;
+  }
+  ctx += `═════════════════════════════════════\n`;
+  return ctx;
+}
+
+function buildFollowUp(p, plan, days) {
+  const log = ls("get", LS.progress) || [];
+  const d = days === 1 ? "yesterday" : `${days} days ago`;
+
+  if (plan) {
+    const start = log.length>0?log[0].weight:p.weight;
+    const curr  = log.length>0?log[log.length-1].weight:p.weight;
+    const delta = (curr-start).toFixed(1);
+    const missed = log.length > 0 && log[log.length-1].sessions === "0";
+
+    if (missed) {
+      return `Hey ${p.name} — I noticed you logged zero sessions last week. What happened? Life gets in the way sometimes, I get it — but let's not make it a habit. Tell me what's going on and we'll figure it out. 💬`;
+    }
+    return `Hey ${p.name}! 👋 Last check-in was ${d}. ${log.length > 0 ? `You're at ${curr}kg (${delta >= 0 ? "+" : ""}${delta}kg from start). ` : ""}Are you still following the plan I gave you? How are the sessions feeling? Drop me an update and I'll adjust if needed. 💪`;
+  }
+  return `Hey ${p.name}! Welcome back — it's been ${d}. Ready to build your training plan? Just say the word and we'll get started. 🔥`;
+}
+
+function greetNew(p) {
+  addAI(`Yo ${p.name}! 🔥 Welcome — I'm Coach IronAI, your AI personal trainer.\n\nI've locked in your profile:\n• **Goal:** ${p.goal}\n• **Level:** ${p.exp}\n• **Diet:** ${p.diet}${p.injuries&&p.injuries!=="None"?`\n• **Limitations:** ${p.injuries}`:""}\n\nHere's what I can do for you:\n- Build a **custom workout plan** 📋\n- Create a **personalised diet plan** 🥗\n- Track and **adapt your plan** as you progress 📊\n- Keep you **accountable** like a real trainer 💪\n\nWant to start with a workout plan, a diet plan, or both? Your call.`);
+}
+
+// ═══════════════════════════════════════════
+//  SIDEBAR & PROFILE
+// ═══════════════════════════════════════════
+function updateSidebar(p) {
+  const init = p.name ? p.name[0].toUpperCase() : "?";
+  document.getElementById("sbAv").innerHTML = `<div class="sb-av-ring" id="sbRing"></div>${init}`;
+  document.getElementById("sbName").textContent = p.name || "Athlete";
+  document.getElementById("sbGoal").textContent = p.goal || "Set your goal";
+  document.getElementById("sbStats").innerHTML = [
+    p.age    ? `<div class="sb-chip">Age <b>${p.age}</b></div>`:"",
+    p.weight ? `<div class="sb-chip">Weight <b>${p.weight}kg</b></div>`:"",
+    p.height ? `<div class="sb-chip"><b>${p.height}cm</b></div>`:"",
+    p.exp    ? `<div class="sb-chip"><b>${p.exp.split(" ")[0]}</b></div>`:"",
+    p.diet   ? `<div class="sb-chip"><b>${p.diet.split("/")[0].trim()}</b></div>`:"",
+  ].join("");
+  // Pulse avatar when active plan exists
+  const plan = ls("get", LS.activePlan);
+  const ring = document.getElementById("sbRing");
+  if (plan && ring) ring.classList.add("show");
+}
+
+// ═══════════════════════════════════════════
+//  ALERT BANNER
+// ═══════════════════════════════════════════
+function showAlert(msg, type="info") {
+  const b = document.getElementById("alertBanner");
+  b.className = `alert-banner ${type}`;
+  document.getElementById("alertText").textContent = msg;
+  b.classList.remove("hidden");
+}
+function dismissAlert() {
+  document.getElementById("alertBanner").classList.add("hidden");
+}
+
+// ═══════════════════════════════════════════
+//  TABS & MOBILE
+// ═══════════════════════════════════════════
+function switchTab(t) {
+  ["chat","plan","progress"].forEach(x=>{
+    document.getElementById(`tab${x[0].toUpperCase()+x.slice(1)}`).classList.remove("active");
+    document.getElementById(`nav${x[0].toUpperCase()+x.slice(1)}`).classList.remove("active");
+  });
+  document.getElementById(`tab${t[0].toUpperCase()+t.slice(1)}`).classList.add("active");
+  document.getElementById(`nav${t[0].toUpperCase()+t.slice(1)}`).classList.add("active");
+  if (window.innerWidth<=768){document.getElementById("sidebar").classList.remove("open");document.getElementById("sbBackdrop").classList.remove("show");}
+}
+function toggleSB() {
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("sbBackdrop").classList.toggle("show");
+}
+
+// ═══════════════════════════════════════════
+//  CHAT HISTORY
+// ═══════════════════════════════════════════
+function loadChatHistory() {
+  const win = document.getElementById("chatWin");
+  win.innerHTML = "";
+  history.forEach(m=>{
+    if(m.role==="user") appendUser(m.content,m.t);
+    else if(m.role==="assistant") appendAI(m.content,m.t);
+  });
+  scrollChat();
+}
+function saveHistory() {
+  if (history.length > 60) history = history.slice(-60);
+  ls("set", LS.history, history);
+}
+function tnow() { return new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}); }
+
+function appendUser(text, t) {
+  const p = ls("get",LS.profile);
+  const init = p&&p.name?p.name[0].toUpperCase():"U";
+  const win = document.getElementById("chatWin");
+  const d = document.createElement("div");
+  d.className="msg user";
+  d.innerHTML=`<div class="msg-av">${init}</div><div class="msg-col"><div class="bubble">${esc(text)}</div><div class="msg-time">${t||tnow()}</div></div>`;
+  win.appendChild(d); scrollChat();
+}
+function appendAI(text, t) {
+  let clean = text
+    .replace(/---WORKOUT_START---[\s\S]*?---WORKOUT_END---/g,"")
+    .replace(/---DIET_START---[\s\S]*?---DIET_END---/g,"")
+    .replace(/PLAN_CONFIRMED/g,"").trim();
+  const win = document.getElementById("chatWin");
+  const d = document.createElement("div");
+  d.className="msg ai";
+  d.innerHTML=`<div class="msg-av">🏋️</div><div class="msg-col"><div class="bubble">${fmt(clean)}</div><div class="msg-time">${t||tnow()}</div></div>`;
+  win.appendChild(d); scrollChat();
+}
+function addAI(text) {
+  const t=tnow();
+  appendAI(text,t);
+  history.push({role:"assistant",content:text,t});
+  saveHistory();
+}
+function fmt(txt) {
+  txt = txt.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>");
+  txt = txt.replace(/\*(.*?)\*/g,"<em>$1</em>");
+  txt = txt.replace(/`([^`]+)`/g,"<code>$1</code>");
+  txt = txt.replace(/^#{1,3} (.+)$/gm,"<h3>$1</h3>");
+  txt = txt.replace(/^[•\-] (.+)$/gm,"<li>$1</li>");
+  txt = txt.replace(/(<li>[\s\S]*?<\/li>)/g,"<ul>$1</ul>");
+  txt = txt.replace(/<\/ul>\s*<ul>/g,"");
+  txt = txt.replace(/---+/g,"<hr>");
+  txt = txt.replace(/\n{2,}/g,"</p><p>").replace(/\n/g,"<br>");
+  return `<p>${txt}</p>`.replace(/<p>\s*<\/p>/g,"");
+}
+function esc(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");}
+function scrollChat(){const w=document.getElementById("chatWin");w.scrollTop=w.scrollHeight;}
+
+// ── TYPING INDICATOR ──────────────────────
+function showTyping(){
+  const win=document.getElementById("chatWin");
+  const d=document.createElement("div");
+  d.className="typing-msg";d.id="tid";
+  d.innerHTML=`<div class="msg-av" style="background:var(--s3);border:1.5px solid var(--border2);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:4px">🏋️</div><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  win.appendChild(d);scrollChat();
+}
+function hideTyping(){const el=document.getElementById("tid");if(el)el.remove();}
+
+// ═══════════════════════════════════════════
+//  SEND MESSAGE
+// ═══════════════════════════════════════════
+async function sendMsg() {
+  if (busy) return;
+  const inp = document.getElementById("msgInput");
+  const text = inp.value.trim();
+  if (!text) return;
+
+  if (!OPENAI_API_KEY || OPENAI_API_KEY === "YOUR_API_KEY_HERE") {
+    addAI("⚠️ API key not set. Open the HTML file, find `const OPENAI_API_KEY = \"YOUR_API_KEY_HERE\"` at the top of the script and replace it with your actual OpenAI key.");
+    return;
+  }
+  const p = ls("get",LS.profile);
+  if (!p) { openOnboarding(); return; }
+
+  const t=tnow();
+  appendUser(text,t);
+  history.push({role:"user",content:text,t});
+  inp.value="";inp.style.height="auto";
+
+  busy=true;
+  document.getElementById("sendBtn").disabled=true;
+  document.getElementById("trainerStatus").textContent="● Thinking...";
+  showTyping();
+
+  try {
+    const reply = await callAI(p, text);
+    hideTyping();
+    parsePlans(reply);
+    // Advanced agreement detection
+    if (detectAgreement(text) || reply.includes("PLAN_CONFIRMED")) activatePlan();
+    addAI(reply);
+  } catch(err) {
+    hideTyping();
+    addAI(`⚠️ Error: ${err.message}\n\nDouble-check your API key in the script and try again.`);
+    console.error("OpenAI error:", err);
+  }
+
+  busy=false;
+  document.getElementById("sendBtn").disabled=false;
+  document.getElementById("trainerStatus").textContent="● Online — Ready to train";
+  inp.focus();
+}
+
+// ── ADVANCED AGREEMENT DETECTION ─────────────
+function detectAgreement(text) {
+  const t = text.toLowerCase().trim();
+  const patterns = [
+    /\bok(ay)?\b/,/\byes\b/,/\byep\b/,/\byeah\b/,/\bsure\b/,/\bgreat\b/,
+    /let'?s (do it|go|start)/,/i'?ll (follow|try|do it|stick)/,
+    /sounds? good/,/looks? good/,/this works?/,/that works?/,/\bcool\b/,
+    /\bagreed?\b/,/\bdeal\b/,/go ahead/,/\bperfect\b/,/\bfine\b/,
+    /start it/,/sign me up/,/i'm in/,/let's go/,/love it/,/makes sense/,
+  ];
+  return patterns.some(rx=>rx.test(t));
+}
+
+// ── OPENAI CALL ──────────────────────────────
+async function callAI(p, userMsg) {
+  const ctx = buildContextBlock(p);
+  const systemPrompt = SYSTEM_BASE + ctx;
+
+  const msgs = [
+    {role:"system", content:systemPrompt},
+    ...history
+      .filter(m=>m.role==="user"||m.role==="assistant")
+      .slice(-20)
+      .map(m=>({role:m.role, content:m.content})),
+  ];
+
+  const res = await fetch("https://api.openai.com/v1/chat/completions",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":`Bearer ${OPENAI_API_KEY}`},
+    body:JSON.stringify({model:MODEL, messages:msgs, max_tokens:1100, temperature:0.72})
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(()=>({}));
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  return data.choices[0].message.content.trim();
+}
+
+// ═══════════════════════════════════════════
+//  PLAN PARSING & ACTIVATION
+// ═══════════════════════════════════════════
+function parsePlans(reply) {
+  const wm = reply.match(/---WORKOUT_START---([\s\S]*?)---WORKOUT_END---/);
+  const dm = reply.match(/---DIET_START---([\s\S]*?)---DIET_END---/);
+  if (wm) ls("set",LS.workout, parseWorkout(wm[1].trim()));
+  if (dm) ls("set",LS.diet, parseDiet(dm[1].trim()));
+}
+function parseWorkout(raw){
+  const g=k=>{const m=raw.match(new RegExp(`${k}:\\s*([\\s\\S]+?)(?=\\n[A-Za-z]|$)`));return m?m[1].trim():"";};
+  return {split:g("Split"),schedule:g("Schedule"),exercises:g("Exercises"),progression:g("Progression"),notes:g("Notes"),raw};
+}
+function parseDiet(raw){
+  const g=k=>{const m=raw.match(new RegExp(`${k}:\\s*([\\s\\S]+?)(?=\\n[A-Za-z]|$)`));return m?m[1].trim():"";};
+  return {calories:g("Calories"),protein:g("Protein"),carbs:g("Carbs"),fats:g("Fats"),meals:g("Meals"),timing:g("Timing"),notes:g("Notes"),raw};
+}
+function activatePlan(){
+  const w=ls("get",LS.workout), d=ls("get",LS.diet);
+  if(!w&&!d)return;
+  const plan={workout:w,diet:d,savedAt:new Date().toISOString()};
+  ls("set",LS.activePlan,plan);
+  renderPlanTab(plan);
+  updateSidebar(ls("get",LS.profile)||{});
+  document.getElementById("planDate").textContent=`Activated: ${new Date(plan.savedAt).toLocaleDateString()}`;
+  toast("✅ Plan locked in! View it in the Plan tab.","lime");
+  document.getElementById("navPlan").querySelector(".nav-badge")?.classList.remove("hidden");
+}
+
+// ═══════════════════════════════════════════
+//  PLAN TAB RENDERING
+// ═══════════════════════════════════════════
+function renderPlanTab(plan){
+  const el=document.getElementById("planBody");
+  if(!plan||(!plan.workout&&!plan.diet)){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><h3>No active plan yet</h3><p>Chat with your trainer and agree to a plan to see it here.</p><button class="btn btn-lime" onclick="switchTab('chat')">Go to Chat →</button></div>`;
+    return;
+  }
+  const w=plan.workout,d=plan.diet;
+  const pr=(k,v)=>v?`<div class="plan-row"><span class="pk">${k}</span><span class="pv">${v.replace(/\n/g,"<br>")}</span></div>`:"";
+  const log=ls("get",LS.progress)||[];
+  const hasEvolution=log.length>=3;
+  let html="";
+  if(hasEvolution){
+    const curr=log[log.length-1].weight,start=log[0].weight,delta=(curr-start).toFixed(1);
+    html+=`<div class="plan-evolution">📈 <span>Plan Evolution Active</span> — ${delta>=0?"+":""}${delta}kg tracked. Your trainer will adjust this plan based on your progress.</div>`;
+  }
+  html+=`<div class="plan-grid">`;
+  if(w)html+=`<div class="plan-section"><div class="plan-sec-head">🏋️ WORKOUT PLAN</div><div class="plan-sec-body">${pr("SPLIT",w.split)}${pr("SCHEDULE",w.schedule)}${pr("EXERCISES",w.exercises)}${pr("PROGRESSION",w.progression)}${pr("NOTES",w.notes)}</div></div>`;
+  if(d)html+=`<div class="plan-section"><div class="plan-sec-head">🥗 DIET PLAN</div><div class="plan-sec-body">${pr("CALORIES",d.calories?d.calories+" kcal/day":"")}${pr("PROTEIN",d.protein?d.protein+"g":"")}${pr("CARBS",d.carbs?d.carbs+"g":"")}${pr("FATS",d.fats?d.fats+"g":"")}${pr("MEALS",d.meals)}${pr("TIMING",d.timing)}${pr("NOTES",d.notes)}</div></div>`;
+  html+=`</div>`;
+  el.innerHTML=html;
+  document.getElementById("planDate").textContent=`Activated: ${new Date(plan.savedAt).toLocaleDateString()}`;
+}
+
+// ═══════════════════════════════════════════
+//  PROGRESS
+// ═══════════════════════════════════════════
+function openModal(id){document.getElementById(id).classList.remove("hidden");}
+function closeModal(id){document.getElementById(id).classList.add("hidden");}
+function saveProgress(){
+  const w=document.getElementById("progWeight").value.trim();
+  const n=document.getElementById("progNotes").value.trim();
+  if(!w){document.getElementById("progWeight").style.borderColor="var(--red)";return;}
+  const log=ls("get",LS.progress)||[];
+  log.push({weight:parseFloat(w),notes:n||"No notes",sessions:progressSessions||"—",date:new Date().toLocaleDateString(),iso:new Date().toISOString()});
+  ls("set",LS.progress,log);
+  progressSessions=null;
+  // Update profile weight
+  const p=ls("get",LS.profile);if(p){p.weight=w;ls("set",LS.profile,p);updateSidebar(p);}
+  closeModal("progressModal");
+  document.getElementById("progWeight").value="";
+  document.getElementById("progNotes").value="";
+  // Reset session opts
+  document.querySelectorAll("#progressModal .opt").forEach(b=>b.classList.remove("sel"));
+  renderProgress();
+  updateConsistencyScore();
+  toast("✅ Progress logged!","lime");
+  // Auto-send to trainer
+  const msg=`📊 Progress update: Weight=${w}kg, sessions this week: ${progressSessions||"not logged"}.${n?" Notes: "+n:""}`;
+  document.getElementById("msgInput").value=msg;
+  switchTab("chat");
+  setTimeout(sendMsg,300);
+}
+
+function renderProgress(){
+  const log=ls("get",LS.progress)||[];
+  const el=document.getElementById("progressBody");
+  if(!log.length){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">📈</div><h3>No progress logged yet</h3><p>Log your first update to start tracking your transformation.</p><button class="btn btn-lime" onclick="openModal('progressModal')">Log First Update</button></div>`;
+    return;
+  }
+  const start=log[0].weight,curr=log[log.length-1].weight;
+  const delta=(curr-start).toFixed(1);
+  const dc=parseFloat(delta)<0?"var(--green)":parseFloat(delta)>0?"var(--orange)":"var(--text-sub)";
+  const p=ls("get",LS.profile);
+
+  // Trend chart data
+  const chartItems=log.slice(-10);
+  const wts=chartItems.map(e=>e.weight);
+  const minW=Math.min(...wts),maxW=Math.max(...wts),range=Math.max(maxW-minW,0.5);
+
+  el.innerHTML=`
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">STARTING WEIGHT</div><div class="stat-val">${start}<span style="font-size:13px;color:var(--text-sub)">kg</span></div></div>
+    <div class="stat-card"><div class="stat-label">CURRENT WEIGHT</div><div class="stat-val lime">${curr}<span style="font-size:13px;color:var(--text-sub)">kg</span></div></div>
+    <div class="stat-card"><div class="stat-label">TOTAL CHANGE</div><div class="stat-val" style="color:${dc}">${parseFloat(delta)>0?"+":""}${delta}<span style="font-size:13px;color:var(--text-sub)">kg</span></div></div>
+    <div class="stat-card"><div class="stat-label">CHECK-INS</div><div class="stat-val blue">${log.length}</div></div>
+  </div>
+  <div class="trend-chart">
+    <div class="trend-label">WEIGHT TREND (last ${chartItems.length} entries)</div>
+    <div class="trend-bars">${chartItems.map(e=>{
+      const h=Math.round(10+((e.weight-minW)/range)*46);
+      const c=e.weight<=curr?"var(--lime)":"var(--border2)";
+      return `<div class="trend-bar" style="height:${h}px;background:${c}"><div class="trend-tip">${e.weight}kg<br>${e.date}</div></div>`;
+    }).join("")}</div>
+  </div>
+  ${[...log].reverse().map((e,i,arr)=>{
+    const prev=i<arr.length-1?arr[i+1].weight:null;
+    const diff=prev!==null?(e.weight-prev).toFixed(1):null;
+    const cls=diff!==null?(parseFloat(diff)<0?"neg":parseFloat(diff)>0?"pos":"zero"):"zero";
+    const sign=diff!==null&&parseFloat(diff)>0?"+":"";
+    return `<div class="pentry">
+      <div class="pentry-date">${e.date}</div>
+      <div style="flex:1">
+        <div class="pentry-weight">${e.weight}kg</div>
+        <div class="pentry-note">${e.notes}${e.sessions&&e.sessions!=="—"?` · Sessions: ${e.sessions}`:""}</div>
+      </div>
+      ${diff!==null?`<div class="pentry-delta ${cls}">${sign}${diff}kg</div>`:""}
+    </div>`;
+  }).join("")}`;
+}
+
+// ═══════════════════════════════════════════
+//  EDIT PROFILE
+// ═══════════════════════════════════════════
+function openEdit(){
+  const p=ls("get",LS.profile)||{};
+  const fields=[
+    {k:"name",l:"Name",t:"text",ph:"Your name"},
+    {k:"age",l:"Age",t:"number",ph:"28"},
+    {k:"height",l:"Height (cm)",t:"number",ph:"175"},
+    {k:"weight",l:"Weight (kg)",t:"number",ph:"78"},
+    {k:"goal",l:"Goal",t:"sel",opts:["Fat Loss","Muscle Gain","Body Recomposition","Strength","General Fitness","Athletic Performance"]},
+    {k:"exp",l:"Experience",t:"sel",opts:["Beginner (0–1 yr)","Intermediate (1–3 yrs)","Advanced (3+ yrs)","Returning from break"]},
+    {k:"diet",l:"Diet Preference",t:"sel",opts:["No restrictions","Vegetarian","Vegan","Keto / Low-carb","Gluten-free","Halal / Kosher"]},
+    {k:"injuries",l:"Injuries/Limits",t:"text",ph:"None"},
+  ];
+  document.getElementById("editBody").innerHTML=fields.map(f=>{
+    if(f.t==="sel")return `<div><label class="flabel">${f.l}</label><select class="field" id="ef_${f.k}">${f.opts.map(o=>`<option${p[f.k]===o?" selected":""}>${o}</option>`).join("")}</select></div>`;
+    return `<div><label class="flabel">${f.l}</label><input class="field" type="${f.t}" id="ef_${f.k}" value="${p[f.k]||""}" placeholder="${f.ph||""}"/></div>`;
+  }).join("");
+  openModal("editModal");
+}
+function saveEdit(){
+  const p=ls("get",LS.profile)||{};
+  ["name","age","height","weight","goal","exp","diet","injuries"].forEach(k=>{
+    const el=document.getElementById(`ef_${k}`);if(el)p[k]=el.value.trim();
+  });
+  ls("set",LS.profile,p);
+  updateSidebar(p);
+  closeModal("editModal");
+  toast("✅ Profile updated!","lime");
+  addAI(`Got it, ${p.name}! I've updated your profile — current weight ${p.weight}kg, goal: ${p.goal}. Do you want me to revise your plan based on these changes?`);
+  switchTab("chat");
+}
+
+// ═══════════════════════════════════════════
+//  CLEAR / RESET
+// ═══════════════════════════════════════════
+function clearChat(){
+  if(!confirm("Clear chat history? Profile and plans stay."))return;
+  history=[];ls("set",LS.history,[]);
+  document.getElementById("chatWin").innerHTML="";
+  addAI("Chat cleared! I still have your full profile and active plan. What do you need today? 💪");
+}
+function resetAll(){
+  if(!confirm("⚠️ This will delete EVERYTHING — profile, plans, progress, chat. Continue?"))return;
+  Object.values(LS).forEach(k=>localStorage.removeItem(k));
+  location.reload();
+}
+
+// ═══════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════
+function qs(text){document.getElementById("msgInput").value=text;sendMsg();}
+function handleKey(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function autoResize(el){el.style.height="auto";el.style.height=Math.min(el.scrollHeight,130)+"px";}
+
+let toastTimer;
+function toast(msg,type=""){
+  const el=document.getElementById("toast");
+  el.textContent=msg;
+  el.className=type?"show "+type:"show";
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.className="",3500);
+}
+
+// PROGRESS MODAL: session opt tracking
+document.addEventListener("click",e=>{
+  if(e.target.closest("#progressModal .opt-grid")){
+    const btn=e.target.closest(".opt");
+    if(btn&&btn.textContent){
+      const vals=["0","1-2","3-4","5+","all"];
+      const match=vals.find(v=>btn.textContent.startsWith(v)||btn.textContent.includes(v));
+      if(match)progressSessions=match;
+    }
+  }
+});
+</script>
+</body>
+</html>
